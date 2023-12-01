@@ -1,0 +1,4 @@
+click
+pydantic
+jinja2
+shutils
