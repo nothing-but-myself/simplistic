@@ -36,7 +36,7 @@ class Page(BasePage):
     style: Style = Style()
     banner: Banner = Banner()
     breadcrumb: Breadcrumb = Breadcrumb()
-    footer: Footer = Footer(text="simplistic")
+    footer: Footer = Footer(text="SIMPLISTIC")
 
 
 class Post(Page):

@@ -15,45 +15,55 @@ def cli():
 
 
 @cli.command()
-@click.option("--src", default="content", type=str, show_default=True)
-@click.option("--dst", default="docs", type=str, show_default=True)
-def gen(src="content", dst="docs"):
-    filenames = os.listdir(os.path.join(os.getcwd(), src))
-    name_to_stat_mapping = {
-        filename: os.stat(os.path.join(os.getcwd(), src, filename)).st_ctime
-        for filename in filenames
+@click.option(
+    "--src",
+    default=os.path.join(os.getcwd(), "contents"),
+    type=str,
+    show_default=True,
+)
+@click.option(
+    "--dst",
+    default=os.path.join(os.getcwd(), "docs"),
+    type=str,
+    show_default=True,
+)
+def gen(src: str, dst: str):
+    name_to_ctime = {
+        filename: os.stat(os.path.join(src, filename)).st_ctime
+        for filename in os.listdir(src)
     }
     contents = list()
     for index, (filename, ctime) in enumerate(
-        sorted(name_to_stat_mapping.items(), key=lambda x: x[-1])
+        sorted(name_to_ctime.items(), key=lambda x: x[-1]),
+        start=1,
     ):
-        path = os.path.join(os.path.join(os.getcwd(), src, filename))
+        path = os.path.join(os.path.join(src, filename))
         title, _ = os.path.splitext(filename)
         with open(path) as f:
             content = Content(
-                text=f.read(),
-                title=title,
-                created_at=ctime,
-                href="/p/{}/".format(index),
+                text=f.read(), title=title, created_at=ctime, href="p/{}/".format(index)
             )
             contents.append(content)
-            post = Post(
-                dst=os.path.join(os.getcwd(), "{}/p/{}".format(dst, index)),
+            _ = Post(
+                dst=os.path.join(dst, "p/{}".format(index)),
                 content=content,
-            )
-            post.generate()
+            ).generate()
 
-    index = Index(
-        dst=os.path.join(os.getcwd(), dst),
+    return Index(
+        dst=dst,
         content=TableOfContent(contents=contents),
-    )
-    index.generate()
+    ).generate()
 
 
 @cli.command()
 @click.option("--port", default=8000, type=int, show_default=True)
-@click.option("--directory", default="docs", type=str, show_default=True)
-def run(port: int = 8000, directory: str = "docs"):
+@click.option(
+    "--directory",
+    default=os.path.join(os.getcwd(), "docs"),
+    type=str,
+    show_default=True,
+)
+def run(port: int, directory: str):
     directory = os.path.join(os.getcwd(), directory)
 
     class DualStackServer(ThreadingHTTPServer):
@@ -71,7 +81,12 @@ def run(port: int = 8000, directory: str = "docs"):
 
 
 @cli.command()
-@click.option("--directory", default="docs", type=str, show_default=True)
-def clean(directory: str = "docs"):
+@click.option(
+    "--directory",
+    default=os.path.join(os.getcwd(), "docs"),
+    type=str,
+    show_default=True,
+)
+def clean(directory: str):
     directory = os.path.join(os.getcwd(), directory)
     return shutil.rmtree(directory)
