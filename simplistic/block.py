@@ -11,15 +11,15 @@ class Style(Block):
     template: str = """
         html * {
             font-family: "{{ font_family }}";
-            font-size: {{ font_size }}px;
             line-height: {{ line_height }};
         }
         div {
+            font-size: {{ font_size }};
             width: {{ percentage }}
         }
     """
-    font_size: int = 14
-    font_family: str = "-apple-system,BlinkMacSystemFont,Helvetica Neue,PingFang SC,Microsoft YaHei,Source Han Sans SC,Noto Sans CJK SC,WenQuanYi Micro Hei,sans-serif"
+    font_size: str = "13px"
+    font_family: str = """ui-sans-serif, -apple-system, BlinkMacSystemFont, Roboto, "Helvetica", "Arial", "Segoe UI", "Inter", "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Microsoft YaHei Light", sans-serif"""
     line_height: float = 1.5
     percentage: str = "33%"
 
@@ -40,9 +40,9 @@ class Banner(Block):
 
 
 class Breadcrumb(Block):
-    # template: str = """
-    #     <p><a href="{{ href }}" style="text-decoration:none;">{{ text }}</a></p>
-    # """
+    template: str = """
+        <p><a href="{{ href }}" style="text-decoration:none;">{{ text }}</a></p>
+    """
     template: str = ""
     text: str = ".."
     href: str = "../../"
@@ -50,10 +50,8 @@ class Breadcrumb(Block):
 
 class Content(Block):
     template: str = """
-        <div>
         <p>{{ title }} @{{ created_at.strftime("%Y-%m-%d %H:%M:%S") }}</p>
         {{ text }}
-        </div>
     """
     title: str
     created_at: datetime
@@ -70,11 +68,11 @@ class ContentEntry(Content):
 
 
 class Footer(Block):
-    # template: str = """
-    #     <footer>
-    #         </br>&copy;<a href="{{ href }}" style="text-decoration:none; color:inherit;" >{{ text }}</a>
-    #     </footer>
-    # """
+    template: str = """
+        <footer>
+            </br>&copy;<a href="{{ href }}" style="text-decoration:none; color:inherit;" >{{ text }}</a>
+        </footer>
+    """
     template: str = ""
     text: str
     href: str = "../../"

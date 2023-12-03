@@ -24,7 +24,7 @@ class Page(BasePage):
             {% endblock %}
 
             {% block content %}
-                {{ content }}
+                <div>{{ content }}</div>
             {% endblock %}
 
             {% block footer %}
@@ -36,8 +36,8 @@ class Page(BasePage):
     title: str = "SIMPLISTIC"
     style: Style = Style()
     banner: Banner = Banner()
-    breadcrumb: Breadcrumb = Breadcrumb()
-    footer: Footer = Footer(text="SIMPLISTIC")
+    # breadcrumb: Breadcrumb = Breadcrumb()
+    # footer: Footer = Footer(text="SIMPLISTIC")
 
 
 class Post(Page):
