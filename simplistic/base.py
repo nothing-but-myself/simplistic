@@ -26,11 +26,30 @@ class Generator(ABC):
 
 
 class BaseBlock(Template, Renderer):
+    @staticmethod
+    def _recur_render(elem):
+        if isinstance(elem, BaseBlock):
+            return elem.render()
+        elif isinstance(elem, list):
+            elems = [BaseBlock._recur_render(e) for e in elem]
+            result = ""
+            for elem in elems:
+                if not isinstance(elem, str):
+                    raise TypeError
+                result += elem
+            return result
+        elif isinstance(elem, dict):
+            return {k: BaseBlock._recur_render(v) for k, v in elem.items()}
+        return elem
+
     def data(self) -> Dict[str, Any]:
         return {
-            key: val.render() if isinstance(val, BaseBlock) else val
+            key: self._recur_render(val)
             for key, val in self
-            if key not in ["template"]
+            if key
+            not in [
+                "template",
+            ]
         }
 
     def render(self):
@@ -45,11 +64,32 @@ class BasePage(Template, Generator):
     ext: str = "html"
     dst: str = "docs"
 
+    @staticmethod
+    def _recur_generate(elem):
+        if isinstance(elem, BaseBlock):
+            return elem.render()
+        elif isinstance(elem, BasePage):
+            result = elem.generate()
+            if result is None:
+                return ""
+            return result
+        elif isinstance(elem, list):
+            return "".join([BasePage._recur_generate(e) for e in elem])
+        elif isinstance(elem, dict):
+            return {k: BasePage._recur_generate(v) for k, v in elem.items()}
+        return elem
+
     def data(self) -> Dict[str, Any]:
         return {
-            key: val.render() if isinstance(val, BaseBlock) else val
+            key: self._recur_generate(val)
             for key, val in self
-            if key not in ["template", "name", "ext", "dst"]
+            if key
+            not in [
+                "template",
+                "name",
+                "ext",
+                "dst",
+            ]
         }
 
     def generate(self):

@@ -5,7 +5,7 @@ A very clean content page generator using Python's well-known libraries pydantic
 ## Install
 
 ```shell
-pip3 intall -r requirements.txt
+pip3 install -r requirements.txt
 ```
 
 ## Usage

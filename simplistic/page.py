@@ -1,6 +1,7 @@
 import os
+from typing import List
 from simplistic.base import BasePage
-from simplistic.block import Style, Banner, Content, Footer, Breadcrumb, TableOfContent
+from simplistic.block import ContentEntry, Style, Banner, Content, Footer, Breadcrumb
 
 
 class Page(BasePage):
@@ -40,10 +41,11 @@ class Page(BasePage):
 
 
 class Post(Page):
-    dst: str
+    dst: str = "docs/p/{idx}/"
     content: Content
 
 
 class Index(Page):
     dst: str = "docs/"
-    content: TableOfContent
+    content: List[ContentEntry]
+    posts: List[Post]

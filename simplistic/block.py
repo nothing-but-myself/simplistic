@@ -9,15 +9,8 @@ class Block(BaseBlock):
 
 class Style(Block):
     template: str = """
-        @font-face {
-            font-family: TwitterChirp;
-            src: url(https://abs.twimg.com/responsive-web/client-web/Chirp-Light.3a18e64a.woff2) format('woff2'), url(https://abs.twimg.com/responsive-web/client-web/Chirp-Light.7a5673aa.woff) format('woff');
-            font-weight: 300;
-            font-style: 'normal';
-            font-display: 'swap';
-        }
         html * {
-            font-family: "TwitterChirp";
+            font-family: "{{ font_family }}";
             font-size: {{ font_size }}px;
             line-height: {{ line_height }};
         }
@@ -25,27 +18,34 @@ class Style(Block):
             width: {{ percentage }}
         }
     """
-    font_size: int = 15
-    font_family: str = "STFangsong"
-    line_height: float = 1.33
+    font_size: int = 14
+    font_family: str = "-apple-system,BlinkMacSystemFont,Helvetica Neue,PingFang SC,Microsoft YaHei,Source Han Sans SC,Noto Sans CJK SC,WenQuanYi Micro Hei,sans-serif"
+    line_height: float = 1.5
     percentage: str = "33%"
 
 
 class Banner(Block):
     template: str = """
-        <div font-size="40" line-height="1.5">
-            {{ text }}
-        </div>                                                   
-    """
-    text: str = "HEY,"
+<a href="../../" style="text-decoration: none; color: inherit;">
+<pre style="all:revert;font-size: 10px;font-family: monospace,-webkit-pictograph;line-height: 1">
+{{text}}
+</pre>
+</a>                                                 
+"""
+    text: str = """
+█▀▀ ─▀─ █▀▄▀█ █▀▀█ █── ─▀─ █▀▀ ▀▀█▀▀ ─▀─ █▀▀ 
+▀▀█ ▀█▀ █─▀─█ █──█ █── ▀█▀ ▀▀█ ──█── ▀█▀ █── 
+▀▀▀ ▀▀▀ ▀───▀ █▀▀▀ ▀▀▀ ▀▀▀ ▀▀▀ ──▀── ▀▀▀ ▀▀▀
+"""  # ASCII BANNER GENERATOR: https://fsymbols.com/generators/smallcaps/
+
 
 class Breadcrumb(Block):
-    template: str = """
-        <a href="{{ href }}">{{ text }}</a>
-    """
-    # template: str = ""
+    # template: str = """
+    #     <p><a href="{{ href }}" style="text-decoration:none;">{{ text }}</a></p>
+    # """
+    template: str = ""
     text: str = ".."
-    href: str = "/"
+    href: str = "../../"
 
 
 class Content(Block):
@@ -61,24 +61,20 @@ class Content(Block):
     href: str
 
 
-class TableOfContent(Block):
+class ContentEntry(Content):
     template: str = """
-        <div>
-        {% for content in contents %}
-            <li style="list-style-type:none;">
-            @{{ content.created_at.strftime("%Y/%m/%d %H:%M:%S") }}  <a href="{{ content.href }}">{{ content.title }}</a>
-            </li>
-        {% endfor %}
-        </div>
+        <li style="list-style-type:none;">
+        @{{ created_at.strftime("%Y/%m/%d %H:%M:%S") }}  <a href="{{ href }}">{{ title }}</a>
+        </li>
     """
-    contents: List[Content]
 
 
 class Footer(Block):
-    template: str = """
-        <footer>
-            </br>&copy;<a href="{{ href }}" style="text-decoration:none; color:inherit;" >{{ text }}</a>
-        </footer>
-    """
+    # template: str = """
+    #     <footer>
+    #         </br>&copy;<a href="{{ href }}" style="text-decoration:none; color:inherit;" >{{ text }}</a>
+    #     </footer>
+    # """
+    template: str = ""
     text: str
-    href: str = "/"
+    href: str = "../../"

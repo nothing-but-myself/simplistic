@@ -5,8 +5,42 @@ import shutil
 import socket
 import click
 from simplistic.page import Post, Index
-from simplistic.block import Content, TableOfContent
+from simplistic.block import Content, ContentEntry
 from http.server import ThreadingHTTPServer, test, SimpleHTTPRequestHandler
+from markdown import markdown
+
+
+ALL_EXTENSIONS = [
+    "extra",
+    "abbr",
+    "attr_list",
+    "def_list",
+    "fenced_code",
+    "footnotes",
+    "md_in_html",
+    "tables",
+    "admonition",
+    "codehilite",
+    "legacy_attrs",
+    "legacy_em",
+    "meta",
+    "nl2br",
+    "sane_lists",
+    "smarty",
+    "toc",
+    "wikilinks",
+]
+
+# ALL_EXTENSIONS = [
+#     "pymdownx.betterem",
+#     "pymdownx.superfences",
+#     "markdown.extensions.footnotes",
+#     "markdown.extensions.attr_list",
+#     "markdown.extensions.def_list",
+#     "markdown.extensions.tables",
+#     "markdown.extensions.abbr",
+#     "markdown.extensions.md_in_html",
+# ]
 
 
 @click.group()
@@ -32,8 +66,8 @@ def gen(src: str, dst: str):
         filename: os.stat(os.path.join(src, filename)).st_ctime
         for filename in os.listdir(src)
     }
-    contents = list()
-    for index, (filename, ctime) in enumerate(
+    index = Index(dst=dst, content=[], posts=[])
+    for idx, (filename, ctime) in enumerate(
         sorted(name_to_ctime.items(), key=lambda x: x[-1]),
         start=1,
     ):
@@ -41,18 +75,17 @@ def gen(src: str, dst: str):
         title, _ = os.path.splitext(filename)
         with open(path) as f:
             content = Content(
-                text=f.read(), title=title, created_at=ctime, href="p/{}/".format(index)
+                text=markdown(f.read(), extensions=ALL_EXTENSIONS),
+                title=title,
+                created_at=ctime,
+                href="./p/{}/".format(idx),
             )
-            contents.append(content)
-            _ = Post(
-                dst=os.path.join(dst, "p/{}".format(index)),
-                content=content,
-            ).generate()
+        content_entry = ContentEntry(**content.model_dump(exclude={"template"}))
+        post = Post(dst=os.path.join(dst, "p/{}".format(idx)), content=content)
+        index.content.append(content_entry)
+        index.posts.append(post)
 
-    return Index(
-        dst=dst,
-        content=TableOfContent(contents=contents),
-    ).generate()
+    return index.generate()
 
 
 @cli.command()
